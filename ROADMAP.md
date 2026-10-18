@@ -9,7 +9,7 @@
 
 ### Модуль 1: Инфраструктурный каркас и базовая контейнеризация
 - [x] 1.1 Конфигурация проекта, линтинг и управление зависимостями (uv/Poetry, ruff, pydantic-settings, .env.example)
-- [ ] 1.2 Базовый docker-compose.yml для локальной разработки: развертывание PostgreSQL 16, Redis 7 и RabbitMQ 3 Management
+- [x] 1.2 Базовый docker-compose.yml для локальной разработки: развертывание PostgreSQL 16, Redis 7 и RabbitMQ 3 Management
 
 ### Модуль 2: Слой хранения данных и доменное моделирование (PostgreSQL & SQLAlchemy 2.0 Async)
 - [ ] 2.1 Проектирование схемы реляционной БД: таблицы `links` (slug, original_url, is_active, created_at, expires_at) и `clicks` (link_id, clicked_at, ip_address, user_agent, referer) с индексами

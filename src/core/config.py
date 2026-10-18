@@ -20,7 +20,8 @@ class Settings(BaseSettings):
     REDIS_PORT: int = Field(default=...)
 
     RABBITMQ_HOST: str = Field(default=...)
-    RABBITMQ_PORT: int = Field(default=...)
+    RABBITMQ_NODE_PORT: int = Field(default=...)
+    RABBITMQ_MANAGEMENT_PORT: int = Field(default=...)
     RABBITMQ_USER: str = Field(default=...)
     RABBITMQ_PASS: str = Field(default=...)
 
@@ -55,7 +56,7 @@ class Settings(BaseSettings):
         return AmqpDsn.build(
             scheme="amqp",
             host=self.RABBITMQ_HOST,
-            port=self.RABBITMQ_PORT,
+            port=self.RABBITMQ_NODE_PORT,
             username=self.RABBITMQ_USER,
             password=self.RABBITMQ_PASS,
         )
