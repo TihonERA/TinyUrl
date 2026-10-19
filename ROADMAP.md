@@ -12,7 +12,7 @@
 - [x] 1.2 Базовый docker-compose.yml для локальной разработки: развертывание PostgreSQL 16, Redis 7 и RabbitMQ 3 Management
 
 ### Модуль 2: Слой хранения данных и доменное моделирование (PostgreSQL & SQLAlchemy 2.0 Async)
-- [ ] 2.1 Проектирование схемы реляционной БД: таблицы `links` (slug, original_url, is_active, created_at, expires_at) и `clicks` (link_id, clicked_at, ip_address, user_agent, referer) с индексами
+- [x] 2.1 Проектирование схемы реляционной БД: таблицы `links` (slug, original_url, is_active, created_at, expires_at) и `clicks` (link_id, clicked_at, ip_address, user_agent, referer) с индексами
 - [ ] 2.2 Настройка асинхронного движка SQLAlchemy 2.0 (asyncpg), управление пулом соединений и асинхронные миграции Alembic
 - [ ] 2.3 Паттерн Repository и Unit of Work: абстракция доступа к данным, изоляция транзакций и запросов от контроллеров
 
