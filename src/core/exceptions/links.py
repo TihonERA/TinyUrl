@@ -5,5 +5,9 @@ class SlugNotUniqueError(DomainError):
     pass
 
 
+class SlugCreationError(DomainError):
+    pass
+
+
 class LinkNotFound(DomainError):
     pass
