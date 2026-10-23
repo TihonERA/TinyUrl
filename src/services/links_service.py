@@ -65,12 +65,21 @@ class LinksService:
 
         raise SlugCreationError()
 
+    async def _get_template(self, slug: str) -> LinksDTO:
+        link = await self.uow.links_repo.get(slug)
+
+        if link is None:
+            raise LinkNotFound()
+
+        return link
+
     async def get(self, slug: str) -> LinksDTO:
         async with self.uow:
-            link = await self.uow.links_repo.get(slug)
+            return await self._get_template(slug)
 
-            if link is None:
-                raise LinkNotFound()
+    async def get_for_redirect(self, slug: str) -> LinksDTO:
+        async with self.uow:
+            link = await self._get_template(slug)
 
             if not link.is_active:
                 raise LinkNotFound()
