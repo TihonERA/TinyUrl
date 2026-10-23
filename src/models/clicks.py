@@ -11,10 +11,10 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from .base import Base
+from src.models.base import Base
 
 if TYPE_CHECKING:
-    from .links import Links
+    from src.models.links import Links
 
 
 class Clicks(Base):

@@ -5,9 +5,9 @@ from sqlalchemy import BigInteger, DateTime, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-    from .clicks import Clicks
+    from src.models.clicks import Clicks
 
-from .base import Base
+from src.models.base import Base
 
 
 class Links(Base):
