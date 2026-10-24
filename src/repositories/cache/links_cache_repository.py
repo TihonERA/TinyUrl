@@ -34,6 +34,11 @@ class LinksCacheRepository:
 
         link_as_json = LinksJsonSerializer.to_json(link)
 
+        ttl = self._calculate_ttl(link.expires_at)
+
+        if ttl == timedelta():
+            return
+
         await self.redis.set(
             name=key, value=link_as_json, ex=self._calculate_ttl(link.expires_at)
         )
