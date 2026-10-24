@@ -60,33 +60,45 @@ class LinksService:
         raise SlugCreationError()
 
     async def _get_template(self, slug: str) -> LinksDTO:
-        if link := await self.cache_repo.get(slug):
-            return link
-
         link = await self.uow.links_repo.get(slug)
 
         if link is None:
             raise LinkNotFound()
 
-        await self.cache_repo.set(link)
-
         return link
 
     async def get(self, slug: str) -> LinksDTO:
+        if link := await self.cache_repo.get(slug):
+            return link
+
         async with self.uow:
-            return await self._get_template(slug)
+            link = await self._get_template(slug)
+
+            await self.cache_repo.set(link)
+            return link
+
+    @staticmethod
+    def _validate_expire_time(expires_at: datetime | None):
+        current_time = datetime.now(timezone.utc)
+
+        if expires_at is not None and current_time > expires_at:
+            raise LinkExpiredError()
 
     async def get_for_redirect(self, slug: str) -> LinksDTO:
+        if link := await self.cache_repo.get(slug):
+            self._validate_expire_time(link.expires_at)
+
+            return link
+
         async with self.uow:
             link = await self._get_template(slug)
 
             if not link.is_active:
                 raise LinkNotFound()
 
-            current_time = datetime.now(timezone.utc)
+            self._validate_expire_time(link.expires_at)
 
-            if link.expires_at is not None and current_time > link.expires_at:
-                raise LinkExpiredError()
+            await self.cache_repo.set(link)
 
             return link
 
@@ -106,6 +118,7 @@ class LinksService:
     async def delete(self, slug: str) -> None:
         async with self.uow:
             await self.uow.links_repo.delete(slug)
-            await self.cache_repo.delete(slug)
 
             await self.uow.commit()
+
+            await self.cache_repo.delete(slug)

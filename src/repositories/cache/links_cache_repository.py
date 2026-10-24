@@ -17,14 +17,14 @@ class LinksCacheRepository:
         if expires_at is None:
             return timedelta(seconds=self.DEFAULT_TTL)
 
-        time_before_expires = datetime.now(timezone.utc) - expires_at
+        time_before_expires = expires_at - datetime.now(timezone.utc)
 
         return timedelta(
             seconds=(min(self.DEFAULT_TTL, time_before_expires.total_seconds()))
         )
 
     def _generate_key(self, slug: str) -> str:
-        return self.PREFIX + str(id)
+        return self.PREFIX + slug
 
     async def set(self, link: LinksDTO) -> None:
         key = self._generate_key(link.slug)
