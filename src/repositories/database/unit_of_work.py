@@ -3,8 +3,8 @@ from typing import Protocol, Self, Type
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from src.repositories.clicks_repository import ClicksRepository
-from src.repositories.links_repository import LinksRepository
+from src.repositories.database.clicks_repository import ClicksRepository
+from src.repositories.database.links_repository import LinksRepository
 
 
 class IUnitOfWork(Protocol):

@@ -10,21 +10,9 @@ from src.core.exceptions.links import (
     SlugNotUniqueError,
 )
 from src.dto.links import LinksDTO
-from src.repositories.unit_of_work import IUnitOfWork
+from src.repositories.database.ports import ILinksRepository
+from src.repositories.database.unit_of_work import IUnitOfWork
 from src.schemas.links import LinksCreateData
-
-
-class ILinksRepository(Protocol):
-    async def create(
-        self,
-        slug: str,
-        original_url: str,
-        expires_at: datetime | None,
-        is_active: bool = True,
-    ) -> LinksDTO: ...
-    async def get(self, slug: str) -> LinksDTO | None: ...
-    async def deactivate(self, slug: str) -> LinksDTO | None: ...
-    async def delete(self, slug: str) -> None: ...
 
 
 class IUnitOfWorkLinks(IUnitOfWork, Protocol):
