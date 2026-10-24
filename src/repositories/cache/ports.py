@@ -1,0 +1,9 @@
+from typing import Protocol
+
+from src.dto.links import LinksDTO
+
+
+class ILinksCacheRepository(Protocol):
+    async def set(self, link: LinksDTO) -> None: ...
+    async def get(self, slug: str) -> LinksDTO | None: ...
+    async def delete(self, slug: str) -> None: ...

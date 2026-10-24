@@ -10,6 +10,7 @@ from src.core.exceptions.links import (
     SlugNotUniqueError,
 )
 from src.dto.links import LinksDTO
+from src.repositories.cache.ports import ILinksCacheRepository
 from src.repositories.database.ports import ILinksRepository
 from src.repositories.database.unit_of_work import IUnitOfWork
 from src.schemas.links import LinksCreateData
@@ -23,8 +24,11 @@ class LinksService:
     BASE62_SYMBOLS = string.ascii_letters + string.digits
     BASE62_LENGTH = 8
 
-    def __init__(self, uow: IUnitOfWorkLinks) -> None:
+    def __init__(
+        self, uow: IUnitOfWorkLinks, cache_repo: ILinksCacheRepository
+    ) -> None:
         self.uow = uow
+        self.cache_repo = cache_repo
 
     @classmethod
     def _generate_base62(cls) -> str:
@@ -47,6 +51,8 @@ class LinksService:
 
                     await self.uow.commit()
 
+                    await self.cache_repo.delete(link.slug)
+
                     return link
             except SlugNotUniqueError:
                 pass
@@ -54,10 +60,15 @@ class LinksService:
         raise SlugCreationError()
 
     async def _get_template(self, slug: str) -> LinksDTO:
+        if link := await self.cache_repo.get(slug):
+            return link
+
         link = await self.uow.links_repo.get(slug)
 
         if link is None:
             raise LinkNotFound()
+
+        await self.cache_repo.set(link)
 
         return link
 
@@ -88,9 +99,13 @@ class LinksService:
 
             await self.uow.commit()
 
+            await self.cache_repo.delete(slug)
+
             return link
 
     async def delete(self, slug: str) -> None:
         async with self.uow:
             await self.uow.links_repo.delete(slug)
+            await self.cache_repo.delete(slug)
+
             await self.uow.commit()
