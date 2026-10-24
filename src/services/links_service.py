@@ -51,9 +51,9 @@ class LinksService:
 
                     await self.uow.commit()
 
-                    await self.cache_repo.delete(link.slug)
+                await self.cache_repo.delete(link.slug)
 
-                    return link
+                return link
             except SlugNotUniqueError:
                 pass
 
@@ -74,8 +74,8 @@ class LinksService:
         async with self.uow:
             link = await self._get_template(slug)
 
-            await self.cache_repo.set(link)
-            return link
+        await self.cache_repo.set(link)
+        return link
 
     @staticmethod
     def _validate_expire_time(expires_at: datetime | None):
@@ -86,6 +86,9 @@ class LinksService:
 
     async def get_for_redirect(self, slug: str) -> LinksDTO:
         if link := await self.cache_repo.get(slug):
+            if not link.is_active:
+                raise LinkNotFound()
+
             self._validate_expire_time(link.expires_at)
 
             return link
@@ -93,14 +96,14 @@ class LinksService:
         async with self.uow:
             link = await self._get_template(slug)
 
-            if not link.is_active:
-                raise LinkNotFound()
+        if not link.is_active:
+            raise LinkNotFound()
 
-            self._validate_expire_time(link.expires_at)
+        self._validate_expire_time(link.expires_at)
 
-            await self.cache_repo.set(link)
+        await self.cache_repo.set(link)
 
-            return link
+        return link
 
     async def deactivate(self, slug: str) -> LinksDTO:
         async with self.uow:
@@ -111,9 +114,8 @@ class LinksService:
 
             await self.uow.commit()
 
-            await self.cache_repo.delete(slug)
-
-            return link
+        await self.cache_repo.delete(slug)
+        return link
 
     async def delete(self, slug: str) -> None:
         async with self.uow:
@@ -121,4 +123,4 @@ class LinksService:
 
             await self.uow.commit()
 
-            await self.cache_repo.delete(slug)
+        await self.cache_repo.delete(slug)

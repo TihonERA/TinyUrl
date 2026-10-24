@@ -19,6 +19,9 @@ class LinksCacheRepository:
 
         time_before_expires = expires_at - datetime.now(timezone.utc)
 
+        if time_before_expires <= timedelta():
+            return timedelta()
+
         return timedelta(
             seconds=(min(self.DEFAULT_TTL, time_before_expires.total_seconds()))
         )
