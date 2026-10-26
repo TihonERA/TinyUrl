@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta, timezone
 from functools import wraps
-from typing import Callable
+from typing import Awaitable, Callable
 
 from redis.asyncio import Redis
 from redis.exceptions import ConnectionError, TimeoutError
@@ -12,11 +12,13 @@ from src.repositories.cache.links_json_serializer import LinksJsonSerializer
 logger = logging.getLogger(__name__)
 
 
-def handle_redis_error[**P, R](func: Callable[P, R]) -> Callable[P, R | None]:
+def handle_redis_error[**P, R](
+    func: Callable[P, Awaitable[R]],
+) -> Callable[P, Awaitable[R | None]]:
     @wraps(func)
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R | None:
+    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R | None:
         try:
-            return func(*args, **kwargs)
+            return await func(*args, **kwargs)
         except (ConnectionError, TimeoutError):
             logger.warning("Redis is unavailable, args: %s", args, exc_info=True)
         return None
