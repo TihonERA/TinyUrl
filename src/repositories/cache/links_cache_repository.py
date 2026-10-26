@@ -1,9 +1,27 @@
+import logging
 from datetime import datetime, timedelta, timezone
+from functools import wraps
+from typing import Callable
 
 from redis.asyncio import Redis
+from redis.exceptions import ConnectionError, TimeoutError
 
 from src.dto.links import LinksDTO
 from src.repositories.cache.links_json_serializer import LinksJsonSerializer
+
+logger = logging.getLogger(__name__)
+
+
+def handle_redis_error[**P, R](func: Callable[P, R]) -> Callable[P, R | None]:
+    @wraps(func)
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R | None:
+        try:
+            return func(*args, **kwargs)
+        except (ConnectionError, TimeoutError):
+            logger.warning("Redis is unavailable, args: %s", args, exc_info=True)
+        return None
+
+    return wrapper
 
 
 class LinksCacheRepository:
@@ -29,6 +47,7 @@ class LinksCacheRepository:
     def _generate_key(self, slug: str) -> str:
         return self.PREFIX + slug
 
+    @handle_redis_error
     async def set(self, link: LinksDTO) -> None:
         key = self._generate_key(link.slug)
 
@@ -43,6 +62,7 @@ class LinksCacheRepository:
             name=key, value=link_as_json, ex=self._calculate_ttl(link.expires_at)
         )
 
+    @handle_redis_error
     async def get(self, slug: str) -> LinksDTO | None:
         key = self._generate_key(slug)
 
@@ -51,6 +71,7 @@ class LinksCacheRepository:
 
         return None
 
+    @handle_redis_error
     async def delete(self, slug: str) -> None:
         key = self._generate_key(slug)
 
