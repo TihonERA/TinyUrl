@@ -9,6 +9,7 @@ from redis.asyncio.client import Pipeline
 
 from src.core.exceptions.rate_limiter import RateLimitCheckError
 from src.dto.rate_limiter import RateLimiterResult
+from src.repositories.cache.error_handler import handle_redis_error
 
 
 class RateLimiterRepository:
@@ -22,7 +23,7 @@ class RateLimiterRepository:
     def _formate_key(self, endpoint: str, ip: str) -> str:
         return ":".join([self.PREFIX, endpoint, ip])
 
-    async def logic(self, pipe: Pipeline, key: str) -> RateLimiterResult:
+    async def _is_allowed_logic(self, pipe: Pipeline, key: str) -> RateLimiterResult:
         current_timestamp = datetime.now(timezone.utc).timestamp()
         last_window_timestamp = current_timestamp - self.WINDOW_LENGTH
 
@@ -64,10 +65,11 @@ class RateLimiterRepository:
         await pipe.execute()
         return RateLimiterResult(status=True, retry_after=None)
 
-    async def placeholder(self, endpoint: str, ip: str) -> RateLimiterResult:
+    @handle_redis_error
+    async def is_allowed(self, endpoint: str, ip: str) -> RateLimiterResult:
         key = self._formate_key(endpoint, ip)
 
-        logic = partial(self.logic, key=key)
+        logic = partial(self._is_allowed_logic, key=key)
 
         try:
             result = cast(RateLimiterResult, await self.redis.transaction(logic, key))

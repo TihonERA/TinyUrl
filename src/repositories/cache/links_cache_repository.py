@@ -1,29 +1,11 @@
-import logging
 from datetime import datetime, timedelta, timezone
-from functools import wraps
-from typing import Awaitable, Callable, Final
+from typing import Final
 
 from redis.asyncio import Redis
-from redis.exceptions import ConnectionError, TimeoutError
 
 from src.dto.links import LinksDTO
+from src.repositories.cache.error_handler import handle_redis_error
 from src.repositories.cache.links_json_serializer import LinksJsonSerializer
-
-logger = logging.getLogger(__name__)
-
-
-def handle_redis_error[**P, R](
-    func: Callable[P, Awaitable[R]],
-) -> Callable[P, Awaitable[R | None]]:
-    @wraps(func)
-    async def wrapper(*args: P.args, **kwargs: P.kwargs) -> R | None:
-        try:
-            return await func(*args, **kwargs)
-        except (ConnectionError, TimeoutError):
-            logger.warning("Redis is unavailable, args: %s", args, exc_info=True)
-        return None
-
-    return wrapper
 
 
 class LinksCacheRepository:
