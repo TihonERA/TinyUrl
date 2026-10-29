@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta, timezone
 from functools import wraps
-from typing import Awaitable, Callable
+from typing import Awaitable, Callable, Final
 
 from redis.asyncio import Redis
 from redis.exceptions import ConnectionError, TimeoutError
@@ -27,7 +27,7 @@ def handle_redis_error[**P, R](
 
 
 class LinksCacheRepository:
-    PREFIX = "links:"
+    PREFIX: Final = "links:"
     DEFAULT_TTL = 24 * 3600
 
     def __init__(self, redis: Redis) -> None:
