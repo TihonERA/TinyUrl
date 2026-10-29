@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Depends, Path, status
 
 from src.api.dependencies import get_link_service
+from src.api.rate_limiter import RateLimiter
 from src.schemas.links import LinksCreateData, LinksResponse
 from src.services.ports import ILinksService
 
@@ -17,7 +18,12 @@ async def get(
     return await links_service.get(slug)
 
 
-@router.post("", response_model=LinksResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "",
+    response_model=LinksResponse,
+    status_code=status.HTTP_201_CREATED,
+    dependencies=[Depends(RateLimiter())],
+)
 async def create(
     link_create_data: Annotated[LinksCreateData, Body()],
     links_service: Annotated[ILinksService, Depends(get_link_service)],

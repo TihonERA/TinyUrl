@@ -7,9 +7,6 @@ from uuid import uuid4
 from redis.asyncio import Redis, WatchError
 from redis.asyncio.client import Pipeline
 
-from src.core.exceptions.rate_limiter import (
-    RateLimitConcurrencyError,
-)
 from src.repositories.cache.error_handler import handle_redis_error
 
 
@@ -48,7 +45,7 @@ class RateLimiterRepository:
             _, timestamp_score = oldest_request[0]
             timestamp_score = float(timestamp_score)
 
-            retry_after = ceil(timestamp_score + window - current_timestamp)
+            retry_after = max(1, ceil(timestamp_score + window - current_timestamp))
 
             return retry_after
 
@@ -77,7 +74,7 @@ class RateLimiterRepository:
 
         try:
             result = cast(int | None, await self.redis.transaction(logic, key))
-        except WatchError as err:
-            raise RateLimitConcurrencyError(window) from err
+        except WatchError:
+            return
 
         return result
