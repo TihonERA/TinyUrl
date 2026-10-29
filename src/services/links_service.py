@@ -51,8 +51,6 @@ class LinksService:
 
                     await self.uow.commit()
 
-                await self.cache_repo.delete(link.slug)
-
                 return link
             except SlugNotUniqueError:
                 pass

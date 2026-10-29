@@ -28,7 +28,7 @@
 
 ### Модуль 5: Защита эндпоинтов и Rate Limiting в Redis
 - [x] 5.1 Исследование алгоритмов Rate Limiting (Token Bucket vs Leaky Bucket vs Sliding Window)
-- [ ] 5.2 Реализация Rate Limiter middleware / dependency в FastAPI на базе Redis (Sliding Window / Leaky Bucket) с ответом HTTP 429 и заголовками Retry-After
+- [x] 5.2 Реализация Rate Limiter middleware / dependency в FastAPI на базе Redis (Sliding Window / Leaky Bucket) с ответом HTTP 429 и заголовками Retry-After
 
 ### Модуль 6: Асинхронная шина событий и публикация кликов (RabbitMQ Producer & aio-pika)
 - [ ] 6.1 Проектирование топологии AMQP: создание Direct/Topic Exchange, очередей и Routing Keys для событий аналитики

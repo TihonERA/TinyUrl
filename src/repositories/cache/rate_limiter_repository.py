@@ -4,7 +4,7 @@ from math import ceil
 from typing import Final, cast
 from uuid import uuid4
 
-from redis.asyncio import Redis, WatchError
+from redis.asyncio import Redis
 from redis.asyncio.client import Pipeline
 
 from src.repositories.cache.error_handler import handle_redis_error
@@ -60,8 +60,6 @@ class RateLimiterRepository:
 
         pipe.expire(name=key, time=window)
 
-        await pipe.execute()
-
     @handle_redis_error
     async def is_allowed(
         self, endpoint: str, ip: str, rate_limit: int, window: int = 60
@@ -72,9 +70,9 @@ class RateLimiterRepository:
             self._is_allowed_logic, key=key, rate_limit=rate_limit, window=window
         )
 
-        try:
-            result = cast(int | None, await self.redis.transaction(logic, key))
-        except WatchError:
-            return
+        result = cast(
+            int | None,
+            await self.redis.transaction(logic, key, value_from_callable=True),
+        )
 
         return result

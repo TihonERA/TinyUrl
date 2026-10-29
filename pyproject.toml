@@ -50,6 +50,7 @@ dependencies = [
   "redis>=8.1.0",
   "ruff>=0.17.1",
   "sqlalchemy>=2.1.5",
+  "uvicorn>=0.54.0",
 ]
 
 [project.scripts]

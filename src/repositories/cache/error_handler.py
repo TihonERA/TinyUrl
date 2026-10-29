@@ -3,6 +3,8 @@ from logging import getLogger
 from types import CoroutineType
 from typing import Any, Awaitable, Callable, Concatenate
 
+from redis.exceptions import ConnectionError, TimeoutError
+
 logger = getLogger(__name__)
 
 
