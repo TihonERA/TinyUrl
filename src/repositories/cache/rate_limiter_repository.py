@@ -7,31 +7,32 @@ from uuid import uuid4
 from redis.asyncio import Redis, WatchError
 from redis.asyncio.client import Pipeline
 
-from src.core.exceptions.rate_limiter import RateLimitCheckError
-from src.dto.rate_limiter import RateLimiterResult
+from src.core.exceptions.rate_limiter import (
+    RateLimitConcurrencyError,
+)
 from src.repositories.cache.error_handler import handle_redis_error
 
 
 class RateLimiterRepository:
-    WINDOW_LENGTH: Final = 60
     PREFIX: Final = "rate_limiter"
 
-    def __init__(self, rate_limit: int, redis: Redis) -> None:
-        self.rate_limit = rate_limit
+    def __init__(self, redis: Redis) -> None:
         self.redis = redis
 
     def _formate_key(self, endpoint: str, ip: str) -> str:
         return ":".join([self.PREFIX, endpoint, ip])
 
-    async def _is_allowed_logic(self, pipe: Pipeline, key: str) -> RateLimiterResult:
+    async def _is_allowed_logic(
+        self, pipe: Pipeline, key: str, rate_limit: int, window: int
+    ) -> int | None:
         current_timestamp = datetime.now(timezone.utc).timestamp()
-        last_window_timestamp = current_timestamp - self.WINDOW_LENGTH
+        last_window_timestamp = current_timestamp - window
 
         request_count = await pipe.zcount(
             name=key, min=last_window_timestamp, max="+inf"
         )
 
-        if request_count >= self.rate_limit:
+        if request_count >= rate_limit:
             oldest_request = await pipe.zrangebyscore(
                 name=key,
                 min=last_window_timestamp,
@@ -42,14 +43,14 @@ class RateLimiterRepository:
             )
 
             if not oldest_request:
-                return RateLimiterResult(status=False, retry_after=self.WINDOW_LENGTH)
+                return window
 
             _, timestamp_score = oldest_request[0]
             timestamp_score = float(timestamp_score)
 
-            retry_after = ceil(timestamp_score + self.WINDOW_LENGTH - current_timestamp)
+            retry_after = ceil(timestamp_score + window - current_timestamp)
 
-            return RateLimiterResult(status=False, retry_after=retry_after)
+            return retry_after
 
         pipe.multi()
 
@@ -60,20 +61,23 @@ class RateLimiterRepository:
             mapping={f"{current_timestamp}:{uuid4().hex}": current_timestamp},
         )
 
-        pipe.expire(name=key, time=self.WINDOW_LENGTH)
+        pipe.expire(name=key, time=window)
 
         await pipe.execute()
-        return RateLimiterResult(status=True, retry_after=None)
 
     @handle_redis_error
-    async def is_allowed(self, endpoint: str, ip: str) -> RateLimiterResult:
+    async def is_allowed(
+        self, endpoint: str, ip: str, rate_limit: int, window: int = 60
+    ) -> int | None:
         key = self._formate_key(endpoint, ip)
 
-        logic = partial(self._is_allowed_logic, key=key)
+        logic = partial(
+            self._is_allowed_logic, key=key, rate_limit=rate_limit, window=window
+        )
 
         try:
-            result = cast(RateLimiterResult, await self.redis.transaction(logic, key))
+            result = cast(int | None, await self.redis.transaction(logic, key))
         except WatchError as err:
-            raise RateLimitCheckError() from err
+            raise RateLimitConcurrencyError(window) from err
 
         return result
