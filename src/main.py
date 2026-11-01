@@ -1,3 +1,6 @@
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
+
 from fastapi import FastAPI
 
 from src.api import links, redirect
@@ -6,10 +9,21 @@ from src.api.handlers import (
     too_many_requests_error_handler,
     unexpected_error_handler,
 )
+from src.core.broker import broker
 from src.core.exceptions.base import DomainError
 from src.core.exceptions.rate_limiter import TooManyRequests
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    await broker.initialize()
+
+    yield
+
+    await broker.close()
+
+
+app = FastAPI(lifespan=lifespan)
 app.include_router(links.router)
 app.include_router(redirect.router)
 

@@ -2,6 +2,8 @@ from aio_pika import connect_robust
 from aio_pika.abc import AbstractChannel, AbstractRobustConnection
 from aio_pika.pool import Pool
 
+from src.core.config import get_settings
+
 
 class MessageBroker:
     def __init__(self, amqp_url: str) -> None:
@@ -27,3 +29,6 @@ class MessageBroker:
             await self.channel_pool.close()
         if self.connection_pool is not None:
             await self.connection_pool.close()
+
+
+broker = MessageBroker(str(get_settings().RABBITMQ_URL))
