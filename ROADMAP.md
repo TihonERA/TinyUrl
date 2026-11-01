@@ -31,7 +31,7 @@
 - [x] 5.2 Реализация Rate Limiter middleware / dependency в FastAPI на базе Redis (Sliding Window / Leaky Bucket) с ответом HTTP 429 и заголовками Retry-After
 
 ### Модуль 6: Асинхронная шина событий и публикация кликов (RabbitMQ Producer & aio-pika)
-- [ ] 6.1 Проектирование топологии AMQP: создание Direct/Topic Exchange, очередей и Routing Keys для событий аналитики
+- [x] 6.1 Проектирование топологии AMQP: создание Direct/Topic Exchange, очередей и Routing Keys для событий аналитики
 - [ ] 6.2 Интеграция `aio-pika`: асинхронный синглтон-пул соединений и каналов RabbitMQ в жизненном цикле FastAPI (lifespan)
 - [ ] 6.3 Producer событий: публикация события `link_clicked` из эндпоинта редиректа без блокировки HTTP-ответа
 - [ ] 6.4 Graceful Degradation брокера: безопасная изоляция сбоев RabbitMQ (редирект клиента должен отрабатывать, даже если брокер временно недоступен)
