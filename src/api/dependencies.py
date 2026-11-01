@@ -1,7 +1,9 @@
-from typing import Annotated
+from typing import Annotated, AsyncGenerator
 
+from aio_pika.abc import AbstractChannel
 from fastapi import Depends
 
+from src.core.broker import broker
 from src.core.cache import redis_client
 from src.core.database import async_session
 from src.repositories.cache.links_cache_repository import LinksCacheRepository
@@ -14,6 +16,14 @@ from src.services.ports import ILinksService
 
 def get_uow() -> IUnitOfWork:
     return UnitOfWork(async_session)
+
+
+async def get_rmq_channel() -> AsyncGenerator[AbstractChannel]:
+    if broker.channel_pool is None:
+        raise RuntimeError("Connection pool is not initialized")
+
+    async with broker.channel_pool.acquire() as channel:
+        yield channel
 
 
 def get_links_cache_repo() -> ILinksCacheRepository:
