@@ -6,6 +6,8 @@ from fastapi import Depends
 from src.core.broker import broker
 from src.core.cache import redis_client
 from src.core.database import async_session
+from src.producers.clicks_producer import ClicksProducer
+from src.producers.ports import IClicksProducer
 from src.repositories.cache.links_cache_repository import LinksCacheRepository
 from src.repositories.cache.ports import ILinksCacheRepository, IRateLimiterRepository
 from src.repositories.cache.rate_limiter_repository import RateLimiterRepository
@@ -32,6 +34,12 @@ def get_links_cache_repo() -> ILinksCacheRepository:
 
 def get_rate_limit_repo() -> IRateLimiterRepository:
     return RateLimiterRepository(redis_client)
+
+
+def get_clicks_producer(
+    channel: Annotated[AbstractChannel, Depends(get_rmq_channel)],
+) -> IClicksProducer:
+    return ClicksProducer(channel)
 
 
 def get_link_service(
