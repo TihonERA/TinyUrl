@@ -37,7 +37,7 @@ def get_rate_limit_repo() -> IRateLimiterRepository:
 
 
 def get_clicks_producer(
-    channel: Annotated[AbstractChannel, Depends(get_rmq_channel)],
+    channel: Annotated[Pool[AbstractChannel], Depends(get_rmq_channel)],
 ) -> IClicksProducer:
     return ClicksProducer(channel)
 

@@ -17,6 +17,7 @@ from src.core.exceptions.rate_limiter import TooManyRequests
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await broker.initialize()
+    await broker.initialize_clicks_topology()
 
     yield
 
