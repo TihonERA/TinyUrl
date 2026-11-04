@@ -21,7 +21,7 @@ def get_uow() -> IUnitOfWork:
     return UnitOfWork(async_session)
 
 
-async def get_rmq_channel() -> Pool[AbstractChannel]:
+async def get_rmq_channel_pool() -> Pool[AbstractChannel]:
     if broker.channel_pool is None:
         raise RuntimeError("Connection pool is not initialized")
 
@@ -37,9 +37,9 @@ def get_rate_limit_repo() -> IRateLimiterRepository:
 
 
 def get_clicks_producer(
-    channel: Annotated[Pool[AbstractChannel], Depends(get_rmq_channel)],
+    channel_pool: Annotated[Pool[AbstractChannel], Depends(get_rmq_channel_pool)],
 ) -> IClicksProducer:
-    return ClicksProducer(channel)
+    return ClicksProducer(channel_pool)
 
 
 def get_link_service(

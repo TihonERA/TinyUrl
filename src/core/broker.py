@@ -39,7 +39,7 @@ class MessageBroker:
 
             queue = await channel.declare_queue(name="links.clicks", durable=True)
 
-            await queue.bind(exchange)
+            await queue.bind(exchange, routing_key="links.clicks")
 
     async def close(self) -> None:
         if self.channel_pool is not None:

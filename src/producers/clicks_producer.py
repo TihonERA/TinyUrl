@@ -7,11 +7,11 @@ from src.producers.clicks_serializer import ClicksSerializer
 
 
 class ClicksProducer:
-    def __init__(self, channel: Pool[AbstractChannel]) -> None:
-        self._channel = channel
+    def __init__(self, channel_pool: Pool[AbstractChannel]) -> None:
+        self._channel_pool = channel_pool
 
     async def send(self, data: LinkClickedDTO) -> None:
-        async with self._channel.acquire() as channel:
+        async with self._channel_pool.acquire() as channel:
             exchange = await channel.get_exchange(name="clicks.exchange")
 
             message_bytes = ClicksSerializer.to_bytes(data)
