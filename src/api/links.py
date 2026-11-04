@@ -1,12 +1,9 @@
-from datetime import datetime, timezone
 from typing import Annotated
 
-from fastapi import APIRouter, BackgroundTasks, Body, Depends, Path, Request, status
+from fastapi import APIRouter, Body, Depends, Path, status
 
-from src.api.dependencies import get_clicks_producer, get_link_service
+from src.api.dependencies import get_link_service
 from src.api.rate_limiter import RateLimiter
-from src.dto.clicks import LinkClickedDTO
-from src.producers.ports import IClicksProducer
 from src.schemas.links import LinksCreateData, LinksResponse
 from src.services.ports import ILinksService
 
@@ -17,25 +14,7 @@ router = APIRouter(prefix="/links")
 async def get(
     slug: Annotated[str, Path()],
     links_service: Annotated[ILinksService, Depends(get_link_service)],
-    request: Request,
-    background_task: BackgroundTasks,
-    clicks_producer: Annotated[IClicksProducer, Depends(get_clicks_producer)],
 ):
-    link = await links_service.get(slug)
-
-    client_ip = request.client.host if request.client else None
-    user_agent = request.headers.get("user_agent")
-    referer = request.headers.get("referer")
-
-    data = LinkClickedDTO(
-        link_id=link.id,
-        clicked_at=datetime.now(timezone.utc),
-        ip_address=client_ip,
-        user_agent=user_agent,
-        referer=referer,
-    )
-
-    background_task.add_task(clicks_producer.send, data)
     return await links_service.get(slug)
 
 

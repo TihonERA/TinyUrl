@@ -1,6 +1,7 @@
-from typing import Annotated, AsyncGenerator
+from typing import Annotated
 
 from aio_pika.abc import AbstractChannel
+from aio_pika.pool import Pool
 from fastapi import Depends
 
 from src.core.broker import broker
@@ -20,12 +21,11 @@ def get_uow() -> IUnitOfWork:
     return UnitOfWork(async_session)
 
 
-async def get_rmq_channel() -> AsyncGenerator[AbstractChannel]:
+async def get_rmq_channel() -> Pool[AbstractChannel]:
     if broker.channel_pool is None:
         raise RuntimeError("Connection pool is not initialized")
 
-    async with broker.channel_pool.acquire() as channel:
-        yield channel
+    return broker.channel_pool
 
 
 def get_links_cache_repo() -> ILinksCacheRepository:
