@@ -27,7 +27,7 @@ async def get_for_redirect(
     link = await links_service.get_for_redirect(slug)
 
     client_ip = request.client.host if request.client else None
-    user_agent = request.headers.get("user_agent")
+    user_agent = request.headers.get("user-agent")
     referer = request.headers.get("referer")
     data = LinkClickedDTO(
         link_id=link.id,

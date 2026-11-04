@@ -16,7 +16,12 @@ def handle_redis_error[Self, **P, R](
         try:
             return await func(self, *args, **kwargs)
         except (ConnectionError, TimeoutError):
-            logger.warning("Redis is unavailable, args: %s", args, exc_info=True)
+            logger.warning(
+                "Redis is unavailable, args: %s, kwargs: %s",
+                args,
+                kwargs,
+                exc_info=True,
+            )
         return None
 
     return wrapper
