@@ -34,7 +34,7 @@ class MessageBroker:
 
         async with self.channel_pool.acquire() as channel:
             dlx = await channel.declare_exchange(
-                name="clicks.dlx", type=ExchangeType.TOPIC
+                name="clicks.dlx", durable=True, type=ExchangeType.TOPIC
             )
             dlq = await channel.declare_queue(name="clicks.dead_letter", durable=True)
 
