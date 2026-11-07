@@ -33,13 +33,27 @@ class MessageBroker:
             raise RuntimeError(self.NOT_INITIALIZED_ERROR_MESSAGE)
 
         async with self.channel_pool.acquire() as channel:
-            exchange = await channel.declare_exchange(
+            dlx = await channel.declare_exchange(
+                name="clicks.dlx", type=ExchangeType.TOPIC
+            )
+            dlq = await channel.declare_queue(name="clicks.dead_letter", durable=True)
+
+            await dlq.bind(exchange=dlx, routing_key="links.clicks.dead_letter")
+
+            links_exchange = await channel.declare_exchange(
                 name="clicks.exchange", durable=True, type=ExchangeType.TOPIC
             )
 
-            queue = await channel.declare_queue(name="links.clicks", durable=True)
+            links_queue = await channel.declare_queue(
+                name="links.clicks",
+                durable=True,
+                arguments={
+                    "x-dead-letter-exchange": "clicks.dlx",
+                    "x-dead-letter-routing-key": "links.clicks.dead_letter",
+                },
+            )
 
-            await queue.bind(exchange, routing_key="links.clicks")
+            await links_queue.bind(links_exchange, routing_key="links.clicks")
 
     async def close(self) -> None:
         if self.channel_pool is not None:

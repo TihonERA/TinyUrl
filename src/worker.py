@@ -31,7 +31,14 @@ async def main() -> None:
 
         queue_name = "links.clicks"
 
-        queue = await channel.declare_queue(name=queue_name, durable=True)
+        queue = await channel.declare_queue(
+            name="links.clicks",
+            durable=True,
+            arguments={
+                "x-dead-letter-exchange": "clicks.dlx",
+                "x-dead-letter-routing-key": "links.clicks.dead_letter",
+            },
+        )
 
         logger.info(f"Created/got queue with name: {queue_name}")
 
