@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 async def place_holder(msg: AbstractIncomingMessage) -> None:
-    logger.info(f"Got message {msg.body.decode()}")
+    async with msg.process(requeue=False):
+        logger.info(f"Got message {msg.body.decode()}")
 
 
 async def main() -> None:
@@ -25,6 +26,8 @@ async def main() -> None:
     async with connection:
         logger.info("Opened TCP connection")
         channel = await connection.channel()
+
+        await channel.set_qos(prefetch_count=10)
 
         queue_name = "links.clicks"
 
