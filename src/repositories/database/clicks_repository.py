@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Sequence
 
 from sqlalchemy import select
@@ -17,12 +18,14 @@ class ClicksRepository:
     async def create(
         self,
         link_id: int,
+        clicked_at: datetime,
         ip_address: str,
         user_agent: str | None,
         referer: str | None,
     ) -> Clicks:
         click = Clicks(
             link_id=link_id,
+            clicked_at=clicked_at,
             ip_address=ip_address,
             user_agent=user_agent,
             referer=referer,

@@ -22,6 +22,7 @@ class IClicksRepository(Protocol):
     async def create(
         self,
         link_id: int,
+        clicked_at: datetime,
         ip_address: str,
         user_agent: str | None,
         referer: str | None,
