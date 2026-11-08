@@ -3,12 +3,14 @@ from typing import Protocol
 
 from user_agents import parse
 
+from src.core.exceptions.links import LinkNotFound
 from src.dto.clicks import ClicksMetrics, LinkClickedDTO
-from src.repositories.database.ports import IClicksRepository
+from src.repositories.database.ports import IClicksRepository, ILinksRepository
 from src.repositories.database.unit_of_work import IUnitOfWork
 
 
 class IUnitOfWorkClicks(IUnitOfWork, Protocol):
+    links_repo: ILinksRepository
     clicks_repo: IClicksRepository
 
 
@@ -28,17 +30,20 @@ class ClicksService:
 
             await self.uow.commit()
 
-    async def get_metrics(self, link_id: int):
+    async def get_metrics(self, slug: str):
         async with self.uow:
+            if (link := await self.uow.links_repo.get(slug)) is None:
+                raise LinkNotFound()
+
             clicks_summary_metrics = await self.uow.clicks_repo.get_clicks_metrics(
-                link_id
+                link.id
             )
-            user_agents = await self.uow.clicks_repo.get_user_agents_metricss(link_id)
+            user_agents = await self.uow.clicks_repo.get_user_agents_metricss(link.id)
             browser_data = defaultdict(int)
             os_data = defaultdict(int)
 
             for user_agent_data in user_agents:
-                if user_agent_data is None:
+                if user_agent_data.user_agent is None:
                     browser_data["Unknown"] += user_agent_data.count
                     os_data["Unknown"] += user_agent_data.count
                     continue
