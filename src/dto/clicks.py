@@ -9,3 +9,9 @@ class LinkClickedDTO:
     ip_address: str
     user_agent: str | None
     referer: str | None
+
+
+@dataclass(frozen=True)
+class ClicksMetrics:
+    total: int
+    unique: int

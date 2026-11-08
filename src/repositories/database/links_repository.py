@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.exceptions.links import SlugNotUniqueError
 from src.dto.links import LinksDTO
 from src.models.links import Links
-from src.repositories.database.links_mapper import LinksMapper
+from src.repositories.database.mappers.links_mapper import LinksMapper
 
 
 class LinksRepository:
