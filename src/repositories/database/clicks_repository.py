@@ -15,7 +15,11 @@ class ClicksRepository:
         self.session = session
 
     async def create(
-        self, link_id: int, ip_address: str, user_agent: str | None, referer: str | None
+        self,
+        link_id: int,
+        ip_address: str,
+        user_agent: str | None,
+        referer: str | None,
     ) -> Clicks:
         click = Clicks(
             link_id=link_id,

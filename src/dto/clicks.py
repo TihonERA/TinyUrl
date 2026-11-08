@@ -6,6 +6,6 @@ from datetime import datetime
 class LinkClickedDTO:
     link_id: int
     clicked_at: datetime
-    ip_address: str | None
+    ip_address: str
     user_agent: str | None
     referer: str | None

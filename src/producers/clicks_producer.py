@@ -6,7 +6,7 @@ from aio_pika.exceptions import AMQPError
 from aio_pika.pool import Pool
 
 from src.dto.clicks import LinkClickedDTO
-from src.producers.clicks_serializer import ClicksSerializer
+from src.serializers.clicks_serializer import ClicksSerializer
 
 logger = logging.getLogger(__name__)
 

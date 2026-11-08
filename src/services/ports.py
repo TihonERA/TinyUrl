@@ -1,5 +1,6 @@
 from typing import Protocol
 
+from src.dto.clicks import LinkClickedDTO
 from src.dto.links import LinksDTO
 from src.schemas.links import LinksCreateData
 
@@ -9,3 +10,7 @@ class ILinksService(Protocol):
     async def get(self, slug: str) -> LinksDTO: ...
     async def deactivate(self, slug: str) -> LinksDTO: ...
     async def delete(self, slug: str) -> None: ...
+
+
+class IClicksService(Protocol):
+    async def create(self, data: LinkClickedDTO) -> None: ...
