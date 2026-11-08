@@ -15,3 +15,14 @@ class LinkClickedDTO:
 class ClicksMetrics:
     total: int
     unique: int
+
+
+@dataclass(frozen=True)
+class ClicksUserAgentsMetrics:
+    user_agent: str
+    count: int
+
+
+@dataclass(frozen=True)
+class ListClicksUserAgentsMetrics:
+    list: list[ClicksUserAgentsMetrics]
