@@ -12,7 +12,7 @@ class LinkClickedDTO:
 
 
 @dataclass(frozen=True)
-class ClicksMetrics:
+class ClicksSummaryMetrics:
     total: int
     unique: int
 
@@ -26,3 +26,11 @@ class ClicksUserAgentsMetrics:
 @dataclass(frozen=True)
 class ListClicksUserAgentsMetrics:
     list: list[ClicksUserAgentsMetrics]
+
+
+@dataclass(frozen=True)
+class ClicksMetrics:
+    total: int
+    count: int
+    browser: dict[str, int]
+    os: dict[str, int]

@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.exceptions.links import LinkNotFound
-from src.dto.clicks import ClicksMetrics, ListClicksUserAgentsMetrics
+from src.dto.clicks import ClicksSummaryMetrics, ListClicksUserAgentsMetrics
 from src.models.clicks import Clicks
 from src.repositories.database.mappers.clicks_mapper import ClicksMapper
 
@@ -52,7 +52,7 @@ class ClicksRepository:
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
-    async def get_clicks_metrics(self, link_id: int) -> ClicksMetrics:
+    async def get_clicks_metrics(self, link_id: int) -> ClicksSummaryMetrics:
         stmt = select(func.count(), func.count(func.distinct(Clicks.link_id))).where(
             Clicks.link_id == link_id
         )

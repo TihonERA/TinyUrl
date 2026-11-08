@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Protocol, Sequence
 
-from src.dto.clicks import ClicksMetrics, ListClicksUserAgentsMetrics
+from src.dto.clicks import ClicksSummaryMetrics, ListClicksUserAgentsMetrics
 from src.dto.links import LinksDTO
 from src.models.clicks import Clicks
 
@@ -29,7 +29,7 @@ class IClicksRepository(Protocol):
         referer: str | None,
     ) -> None: ...
     async def get_multiple(self, link_id: int, page: int) -> Sequence[Clicks]: ...
-    async def get_clicks_metrics(self, link_id: int) -> ClicksMetrics: ...
+    async def get_clicks_metrics(self, link_id: int) -> ClicksSummaryMetrics: ...
     async def get_user_agents_metricss(
         self, link_id: int
     ) -> ListClicksUserAgentsMetrics: ...

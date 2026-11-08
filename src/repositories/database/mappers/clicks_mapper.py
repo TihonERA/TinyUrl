@@ -3,7 +3,7 @@ from typing import Sequence
 from sqlalchemy import Row
 
 from src.dto.clicks import (
-    ClicksMetrics,
+    ClicksSummaryMetrics,
     ClicksUserAgentsMetrics,
     ListClicksUserAgentsMetrics,
 )
@@ -11,8 +11,8 @@ from src.dto.clicks import (
 
 class ClicksMapper:
     @staticmethod
-    def to_clicks_metrics(total: int, unique: int) -> ClicksMetrics:
-        return ClicksMetrics(total=total, unique=unique)
+    def to_clicks_metrics(total: int, unique: int) -> ClicksSummaryMetrics:
+        return ClicksSummaryMetrics(total=total, unique=unique)
 
     @staticmethod
     def _to_clicks_user_agents_metrics(
