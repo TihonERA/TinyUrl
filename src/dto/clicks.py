@@ -19,18 +19,13 @@ class ClicksSummaryMetrics:
 
 @dataclass(frozen=True)
 class ClicksUserAgentsMetrics:
-    user_agent: str
+    user_agent: str | None
     count: int
-
-
-@dataclass(frozen=True)
-class ListClicksUserAgentsMetrics:
-    list: list[ClicksUserAgentsMetrics]
 
 
 @dataclass(frozen=True)
 class ClicksMetrics:
     total: int
-    count: int
+    unique: int
     browser: dict[str, int]
     os: dict[str, int]

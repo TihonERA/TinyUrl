@@ -37,15 +37,20 @@ class ClicksService:
             browser_data = defaultdict(int)
             os_data = defaultdict(int)
 
-            for user_agent_data in user_agents.list:
-                parsed_user_agent = parse(user_agent_data)
+            for user_agent_data in user_agents:
+                if user_agent_data is None:
+                    browser_data["Unknown"] += user_agent_data.count
+                    os_data["Unknown"] += user_agent_data.count
+                    continue
+
+                parsed_user_agent = parse(user_agent_data.user_agent)
 
                 browser_data[parsed_user_agent.browser.family] += user_agent_data.count
                 os_data[parsed_user_agent.os.family] += user_agent_data.count
 
             return ClicksMetrics(
                 total=clicks_summary_metrics.total,
-                count=clicks_summary_metrics.unique,
+                unique=clicks_summary_metrics.unique,
                 browser=browser_data,
                 os=os_data,
             )

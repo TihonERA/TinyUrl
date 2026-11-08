@@ -5,7 +5,6 @@ from sqlalchemy import Row
 from src.dto.clicks import (
     ClicksSummaryMetrics,
     ClicksUserAgentsMetrics,
-    ListClicksUserAgentsMetrics,
 )
 
 
@@ -23,6 +22,5 @@ class ClicksMapper:
     @classmethod
     def to_list_clicks_user_agents_metrics(
         cls, data: Sequence[Row[str, int]]
-    ) -> ListClicksUserAgentsMetrics:
-        list = [cls._to_clicks_user_agents_metrics(u, c) for u, c in data]
-        return ListClicksUserAgentsMetrics(list)
+    ) -> list[ClicksUserAgentsMetrics]:
+        return [cls._to_clicks_user_agents_metrics(u, c) for u, c in data]
