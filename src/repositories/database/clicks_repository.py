@@ -45,7 +45,7 @@ class ClicksRepository:
         total, unique = result.one()
         return ClicksMapper.to_clicks_metrics(total, unique)
 
-    async def get_user_agents_metricss(
+    async def get_user_agents_metrics(
         self, link_id: int
     ) -> list[ClicksUserAgentsMetrics]:
         stmt = (

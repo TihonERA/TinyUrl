@@ -25,7 +25,7 @@ class ClicksUserAgentsMetrics:
 
 @dataclass(frozen=True)
 class ClicksMetrics:
-    total: int
-    unique: int
-    browser: dict[str, int]
+    total_clicks: int
+    unique_clicks: int
+    browsers: dict[str, int]
     os: dict[str, int]

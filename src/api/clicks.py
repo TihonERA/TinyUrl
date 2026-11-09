@@ -13,5 +13,5 @@ router = APIRouter()
 async def get_metrics(
     slug: Annotated[str, Path()],
     clicks_service: Annotated[IClicksService, Depends(get_clicks_service)],
-) -> ClicksAnalyticsResponse:
-    return clicks_service.get_metrics(slug)
+):
+    return await clicks_service.get_metrics(slug)
