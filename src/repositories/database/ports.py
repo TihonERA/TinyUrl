@@ -1,9 +1,8 @@
 from datetime import datetime
-from typing import Protocol, Sequence
+from typing import Protocol
 
 from src.dto.clicks import ClicksSummaryMetrics, ClicksUserAgentsMetrics
 from src.dto.links import LinksDTO
-from src.models.clicks import Clicks
 
 
 class ILinksRepository(Protocol):

@@ -15,7 +15,7 @@ class ClicksMapper:
 
     @staticmethod
     def _to_clicks_user_agents_metrics(
-        user_agent: str, count: int
+        user_agent: str | None, count: int
     ) -> ClicksUserAgentsMetrics:
         return ClicksUserAgentsMetrics(user_agent=user_agent, count=count)
 
