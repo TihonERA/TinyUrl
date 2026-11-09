@@ -13,8 +13,9 @@ from src.repositories.cache.links_cache_repository import LinksCacheRepository
 from src.repositories.cache.ports import ILinksCacheRepository, IRateLimiterRepository
 from src.repositories.cache.rate_limiter_repository import RateLimiterRepository
 from src.repositories.database.unit_of_work import IUnitOfWork, UnitOfWork
+from src.services.clicks_service import ClicksService, IUnitOfWorkClicks
 from src.services.links_service import IUnitOfWorkLinks, LinksService
-from src.services.ports import ILinksService
+from src.services.ports import IClicksService, ILinksService
 
 
 def get_uow() -> IUnitOfWork:
@@ -47,3 +48,9 @@ def get_link_service(
     links_cache_repo: Annotated[ILinksCacheRepository, Depends(get_links_cache_repo)],
 ) -> ILinksService:
     return LinksService(uow, links_cache_repo)
+
+
+def get_clicks_service(
+    uow: Annotated[IUnitOfWorkClicks, Depends(get_uow)],
+) -> IClicksService:
+    return ClicksService(uow)

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Sequence
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
@@ -12,8 +11,6 @@ from src.repositories.database.mappers.clicks_mapper import ClicksMapper
 
 
 class ClicksRepository:
-    PAGE_LENGTH = 10
-
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
@@ -38,19 +35,6 @@ class ClicksRepository:
             await self.session.flush()
         except IntegrityError as err:
             raise LinkNotFound() from err
-
-    async def get_multiple(self, link_id: int, page: int) -> Sequence[Clicks]:
-        page_offset = page * self.PAGE_LENGTH
-
-        stmt = (
-            select(Clicks)
-            .where(Clicks.link_id == link_id)
-            .offset(page_offset)
-            .limit(self.PAGE_LENGTH)
-        )
-
-        result = await self.session.execute(stmt)
-        return result.scalars().all()
 
     async def get_clicks_metrics(self, link_id: int) -> ClicksSummaryMetrics:
         stmt = select(func.count(), func.count(func.distinct(Clicks.ip_address))).where(

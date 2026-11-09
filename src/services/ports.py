@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from src.dto.clicks import LinkClickedDTO
+from src.dto.clicks import ClicksMetrics, LinkClickedDTO
 from src.dto.links import LinksDTO
 from src.schemas.links import LinksCreateData
 
@@ -14,3 +14,4 @@ class ILinksService(Protocol):
 
 class IClicksService(Protocol):
     async def create(self, data: LinkClickedDTO) -> None: ...
+    async def get_metrics(self, slug: str) -> ClicksMetrics: ...

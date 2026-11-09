@@ -30,7 +30,7 @@ class ClicksService:
 
             await self.uow.commit()
 
-    async def get_metrics(self, slug: str):
+    async def get_metrics(self, slug: str) -> ClicksMetrics:
         async with self.uow:
             if (link := await self.uow.links_repo.get(slug)) is None:
                 raise LinkNotFound()
@@ -38,7 +38,7 @@ class ClicksService:
             clicks_summary_metrics = await self.uow.clicks_repo.get_clicks_metrics(
                 link.id
             )
-            user_agents = await self.uow.clicks_repo.get_user_agents_metricss(link.id)
+            user_agents = await self.uow.clicks_repo.get_user_agents_metrics(link.id)
             browser_data = defaultdict(int)
             os_data = defaultdict(int)
 

@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 
 from fastapi import FastAPI
 
-from src.api import links, redirect
+from src.api import clicks, links, redirect
 from src.api.handlers import (
     domain_error_handler,
     too_many_requests_error_handler,
@@ -27,6 +27,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 app = FastAPI(lifespan=lifespan)
 app.include_router(links.router)
 app.include_router(redirect.router)
+app.include_router(clicks.router)
 
 app.exception_handler(Exception)(unexpected_error_handler)
 app.exception_handler(DomainError)(domain_error_handler)
