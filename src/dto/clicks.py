@@ -29,3 +29,9 @@ class ClicksMetrics:
     unique_clicks: int
     browsers: dict[str, int]
     os: dict[str, int]
+
+
+@dataclass(frozen=True)
+class ClicksTimeBucket:
+    time: datetime
+    count: int

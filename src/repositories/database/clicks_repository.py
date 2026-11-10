@@ -1,11 +1,15 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.exceptions.links import LinkNotFound
-from src.dto.clicks import ClicksSummaryMetrics, ClicksUserAgentsMetrics
+from src.dto.clicks import (
+    ClicksSummaryMetrics,
+    ClicksTimeBucket,
+    ClicksUserAgentsMetrics,
+)
 from src.models.clicks import Clicks
 from src.repositories.database.mappers.clicks_mapper import ClicksMapper
 
@@ -56,3 +60,19 @@ class ClicksRepository:
 
         result = await self.session.execute(stmt)
         return ClicksMapper.to_list_clicks_user_agents_metrics(result.all())
+
+    async def get_clicks_time_bucket(
+        self, link_id: int, hours: int
+    ) -> list[ClicksTimeBucket]:
+        start_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+        time_bucket = func.date_trunc("hour", Clicks.clicked_at)
+
+        stmt = (
+            select(time_bucket, func.count(Clicks.id))
+            .where(Clicks.link_id == link_id, Clicks.clicked_at > start_time)
+            .group_by(time_bucket)
+            .order_by(time_bucket.asc())
+        )
+
+        result = await self.session.execute(stmt)
+        return ClicksMapper.to_list_clicks_time_bucket(result.all())

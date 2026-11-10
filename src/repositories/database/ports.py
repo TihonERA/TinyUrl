@@ -1,7 +1,11 @@
 from datetime import datetime
 from typing import Protocol
 
-from src.dto.clicks import ClicksSummaryMetrics, ClicksUserAgentsMetrics
+from src.dto.clicks import (
+    ClicksSummaryMetrics,
+    ClicksTimeBucket,
+    ClicksUserAgentsMetrics,
+)
 from src.dto.links import LinksDTO
 
 
@@ -31,3 +35,6 @@ class IClicksRepository(Protocol):
     async def get_user_agents_metrics(
         self, link_id: int
     ) -> list[ClicksUserAgentsMetrics]: ...
+    async def get_clicks_time_bucket(
+        self, link_id: int, hours: int
+    ) -> list[ClicksTimeBucket]: ...
