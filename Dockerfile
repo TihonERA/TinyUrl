@@ -13,7 +13,7 @@ RUN uv sync --frozen --no-dev --no-editable
 FROM python:3.12-slim
 RUN groupadd -r appgroup && useradd -r -g appgroup -u 1000 appuser
 WORKDIR /app
-COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
+COPY --from=builder --chown=appuser:appgroup /app/.venv /app/.venv
 
 USER appuser
 COPY --chown=appuser:appgroup ./src ./src
