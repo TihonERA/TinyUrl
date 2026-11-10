@@ -17,8 +17,11 @@ from src.repositories.database.unit_of_work import IUnitOfWork
 
 
 class IUnitOfWorkClicks(IUnitOfWork, Protocol):
-    links_repo: ILinksRepository
-    clicks_repo: IClicksRepository
+    @property
+    def links_repo(self) -> ILinksRepository: ...
+
+    @property
+    def clicks_repo(self) -> IClicksRepository: ...
 
 
 class ClicksService:

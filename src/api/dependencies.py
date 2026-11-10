@@ -9,8 +9,13 @@ from src.core.cache import redis_client
 from src.core.database import async_session
 from src.producers.clicks_producer import ClicksProducer
 from src.producers.ports import IClicksProducer
+from src.repositories.cache.clicks_cache_repository import ClicksCacheRepository
 from src.repositories.cache.links_cache_repository import LinksCacheRepository
-from src.repositories.cache.ports import ILinksCacheRepository, IRateLimiterRepository
+from src.repositories.cache.ports import (
+    IClicksCacheRepository,
+    ILinksCacheRepository,
+    IRateLimiterRepository,
+)
 from src.repositories.cache.rate_limiter_repository import RateLimiterRepository
 from src.repositories.database.unit_of_work import IUnitOfWork, UnitOfWork
 from src.services.clicks_service import ClicksService, IUnitOfWorkClicks
@@ -33,6 +38,10 @@ def get_links_cache_repo() -> ILinksCacheRepository:
     return LinksCacheRepository(redis_client)
 
 
+def get_clicks_cache_repo() -> IClicksCacheRepository:
+    return ClicksCacheRepository(redis_client)
+
+
 def get_rate_limit_repo() -> IRateLimiterRepository:
     return RateLimiterRepository(redis_client)
 
@@ -52,5 +61,8 @@ def get_link_service(
 
 def get_clicks_service(
     uow: Annotated[IUnitOfWorkClicks, Depends(get_uow)],
+    clicks_cache_repo: Annotated[
+        IClicksCacheRepository, Depends(get_clicks_cache_repo)
+    ],
 ) -> IClicksService:
-    return ClicksService(uow)
+    return ClicksService(uow, clicks_cache_repo)

@@ -17,7 +17,8 @@ from src.schemas.links import LinksCreateData
 
 
 class IUnitOfWorkLinks(IUnitOfWork, Protocol):
-    links_repo: ILinksRepository
+    @property
+    def links_repo(self) -> ILinksRepository: ...
 
 
 class LinksService:
