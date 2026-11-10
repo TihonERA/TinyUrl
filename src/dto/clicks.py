@@ -24,14 +24,15 @@ class ClicksUserAgentsMetrics:
 
 
 @dataclass(frozen=True)
+class ClicksTimeBucket:
+    time: datetime
+    count: int
+
+
+@dataclass(frozen=True)
 class ClicksMetrics:
     total_clicks: int
     unique_clicks: int
     browsers: dict[str, int]
     os: dict[str, int]
-
-
-@dataclass(frozen=True)
-class ClicksTimeBucket:
-    time: datetime
-    count: int
+    clickes_by_hour: list[ClicksTimeBucket]

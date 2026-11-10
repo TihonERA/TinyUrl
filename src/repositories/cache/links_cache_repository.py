@@ -5,7 +5,7 @@ from redis.asyncio import Redis
 
 from src.dto.links import LinksDTO
 from src.repositories.cache.error_handler import handle_redis_error
-from src.repositories.cache.links_json_serializer import LinksJsonSerializer
+from src.repositories.cache.serializers.links_json_serializer import LinksJsonSerializer
 
 
 class LinksCacheRepository:
