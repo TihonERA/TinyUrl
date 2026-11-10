@@ -7,9 +7,11 @@ from src.core.exceptions.links import LinkNotFound
 from src.dto.clicks import (
     ClicksMetrics,
     ClicksSummaryMetrics,
+    ClicksTimeBucket,
     ClicksUserAgentsMetrics,
     LinkClickedDTO,
 )
+from src.repositories.cache.ports import IClicksCacheRepository
 from src.repositories.database.ports import IClicksRepository, ILinksRepository
 from src.repositories.database.unit_of_work import IUnitOfWork
 
@@ -20,8 +22,11 @@ class IUnitOfWorkClicks(IUnitOfWork, Protocol):
 
 
 class ClicksService:
-    def __init__(self, uow: IUnitOfWorkClicks) -> None:
+    def __init__(
+        self, uow: IUnitOfWorkClicks, cache_repo: IClicksCacheRepository
+    ) -> None:
         self.uow = uow
+        self.cache_repo = cache_repo
 
     async def create(self, data: LinkClickedDTO) -> None:
         async with self.uow:
@@ -39,6 +44,7 @@ class ClicksService:
     def _calculate_clicks_metrics(
         summary_metrics: ClicksSummaryMetrics,
         user_agents_metrics: list[ClicksUserAgentsMetrics],
+        clicks_by_hour: list[ClicksTimeBucket],
     ) -> ClicksMetrics:
         browser_data = defaultdict(int)
         os_data = defaultdict(int)
@@ -59,9 +65,13 @@ class ClicksService:
             unique_clicks=summary_metrics.unique,
             browsers=browser_data,
             os=os_data,
+            clicks_by_hour=clicks_by_hour,
         )
 
     async def get_metrics(self, slug: str) -> ClicksMetrics:
+        if clicks_metrics := await self.cache_repo.get(slug):
+            return clicks_metrics
+
         async with self.uow:
             if (link := await self.uow.links_repo.get(slug)) is None:
                 raise LinkNotFound()
@@ -70,5 +80,14 @@ class ClicksService:
             user_agents_metrics = await self.uow.clicks_repo.get_user_agents_metrics(
                 link.id
             )
+            clicks_by_hour = await self.uow.clicks_repo.get_clicks_time_bucket(
+                link_id=link.id
+            )
 
-        return self._calculate_clicks_metrics(summary_metrics, user_agents_metrics)
+        metrics = self._calculate_clicks_metrics(
+            summary_metrics, user_agents_metrics, clicks_by_hour
+        )
+
+        await self.cache_repo.set(slug=slug, metrics=metrics)
+
+        return metrics

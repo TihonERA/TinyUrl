@@ -61,10 +61,10 @@ class ClicksRepository:
         result = await self.session.execute(stmt)
         return ClicksMapper.to_list_clicks_user_agents_metrics(result.all())
 
-    async def get_clicks_time_bucket(
-        self, link_id: int, hours: int
-    ) -> list[ClicksTimeBucket]:
-        start_time = datetime.now(timezone.utc) - timedelta(hours=hours)
+    async def get_clicks_time_bucket(self, link_id: int) -> list[ClicksTimeBucket]:
+        timeframe_hours = 24
+
+        start_time = datetime.now(timezone.utc) - timedelta(hours=timeframe_hours)
         time_bucket = func.date_trunc("hour", Clicks.clicked_at)
 
         stmt = (

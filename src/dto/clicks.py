@@ -35,4 +35,4 @@ class ClicksMetrics:
     unique_clicks: int
     browsers: dict[str, int]
     os: dict[str, int]
-    clickes_by_hour: list[ClicksTimeBucket]
+    clicks_by_hour: list[ClicksTimeBucket]
