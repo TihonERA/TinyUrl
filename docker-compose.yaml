@@ -65,6 +65,7 @@ services:
       - app_net
 
   worker:
+    build: .
     image: tiny-url:latest
     container_name: worker
     env_file:
@@ -82,6 +83,7 @@ services:
     command: ["python", "-m", "src.worker"]
 
   web:
+    build: .
     image: tiny-url:latest
     container_name: web
     env_file:
