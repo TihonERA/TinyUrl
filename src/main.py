@@ -10,6 +10,8 @@ from src.api.handlers import (
     unexpected_error_handler,
 )
 from src.core.broker import broker
+from src.core.cache import redis_client
+from src.core.database import async_engine
 from src.core.exceptions.base import DomainError
 from src.core.exceptions.rate_limiter import TooManyRequests
 
@@ -21,6 +23,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     yield
 
+    await redis_client.aclose()
+    await async_engine.dispose()
     await broker.close()
 
 
