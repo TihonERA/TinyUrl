@@ -1,7 +1,6 @@
 from functools import wraps
 from logging import getLogger
-from types import CoroutineType
-from typing import Any, Awaitable, Callable, Concatenate
+from typing import Awaitable, Callable, Concatenate
 
 from redis.exceptions import ConnectionError, TimeoutError
 
@@ -10,7 +9,7 @@ logger = getLogger(__name__)
 
 def handle_redis_error[Self, **P, R](
     func: Callable[Concatenate[Self, P], Awaitable[R]],
-) -> Callable[Concatenate[Self, P], CoroutineType[Any, Any, R | None]]:
+) -> Callable[Concatenate[Self, P], Awaitable[R | None]]:
     @wraps(func)
     async def wrapper(self: Self, *args: P.args, **kwargs: P.kwargs) -> R | None:
         try:

@@ -47,7 +47,7 @@
 - [x] 8.2 Агрегация временных рядов в SQL (переходы по часам/дням) и кэширование аналитических отчетов в Redis
 
 ### Модуль 9: Продакшн-оркестрация и Graceful Shutdown (Docker & Docker Compose)
-- [ ] 9.1 Multi-stage Dockerfile для основного сервиса FastAPI и воркера аналитики
+- [x] 9.1 Multi-stage Dockerfile для основного сервиса FastAPI и воркера аналитики
 - [ ] 9.2 Оркестрация полного контура в docker-compose.yml: healthchecks, depends_on с условиями готовности сервисов, networks, volumes
 - [ ] 9.3 Реализация Graceful Shutdown: корректный перехват SIGTERM/SIGINT, закрытие соединений БД, Redis и сброс каналов aio-pika
 
