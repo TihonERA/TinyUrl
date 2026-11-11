@@ -23,9 +23,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     yield
 
+    await broker.close()
     await redis_client.aclose()
     await async_engine.dispose()
-    await broker.close()
 
 
 app = FastAPI(lifespan=lifespan)

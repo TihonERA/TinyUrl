@@ -61,13 +61,10 @@ async def main() -> None:
 
             await queue.cancel(consumer_tag)
     finally:
-        logger.info("Closing broker connections...")
-        await connection.close()
-
         logger.info("Closing Redis connection...")
         await redis_client.aclose()
 
-        logger.info("Clossing Database connection...")
+        logger.info("Closing Database connection...")
         await async_engine.dispose()
 
         logger.info("Shutdown complete.")
