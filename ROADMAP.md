@@ -49,7 +49,7 @@
 ### Модуль 9: Продакшн-оркестрация и Graceful Shutdown (Docker & Docker Compose)
 - [x] 9.1 Multi-stage Dockerfile для основного сервиса FastAPI и воркера аналитики
 - [x] 9.2 Оркестрация полного контура в docker-compose.yml: healthchecks, depends_on с условиями готовности сервисов, networks, volumes
-- [ ] 9.3 Реализация Graceful Shutdown: корректный перехват SIGTERM/SIGINT, закрытие соединений БД, Redis и сброс каналов aio-pika
+- [x] 9.3 Реализация Graceful Shutdown: корректный перехват SIGTERM/SIGINT, закрытие соединений БД, Redis и сброс каналов aio-pika
 
 ### Модуль 10 (Level+): Нагрузочное тестирование, Chaos-эксперименты и аудит
 - [ ] 10.1 Нагрузочное тестирование (Locust / k6): замер RPS и латентности эндпоинта редиректа под нагрузкой (сравнение: холодный кэш vs прогретый Redis)
