@@ -1,25 +1,14 @@
 import random
-import time
+from pathlib import Path
 
-import httpx
-from locust import FastHttpUser, between, events, task
+from locust import FastHttpUser, between, task
 
 SLUGS = []
+SLUGS_FILE = Path("src/tests/slugs.txt")
 
-
-@events.test_start.add_listener
-def create_slugs(environment, **kwargs) -> None:
-    base_url = "http://localhost:8000"
-
-    with httpx.Client(base_url=base_url) as client:
-        for _ in range(20):
-            body = {"original_url": "https://google.com/", "is_active": True}
-            response = client.post("/links", json=body)
-
-            slug = response.json()["slug"]
-
-            SLUGS.append(slug)
-            time.sleep(0.1)
+if SLUGS_FILE.exists():
+    with open(SLUGS_FILE) as f:
+        SLUGS = [line.strip() for line in f if line.strip()]
 
 
 class User(FastHttpUser):
